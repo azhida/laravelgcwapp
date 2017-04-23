@@ -39,6 +39,8 @@ class RouteServiceProvider extends ServiceProvider
 
         $this->mapWebRoutes();
 
+        $this->mapAdminRoutes(); // 自定义的 admin.php路由文件
+
         //
     }
 
@@ -69,5 +71,16 @@ class RouteServiceProvider extends ServiceProvider
              ->middleware('api')
              ->namespace($this->namespace)
              ->group(base_path('routes/api.php'));
+    }
+
+    /**
+     * 自定义 admin.php 路由文件
+     */
+    protected function mapAdminRoutes()
+    {
+        Route::prefix('')
+//            ->middleware('admin')
+            ->namespace($this->namespace)
+            ->group(base_path('routes/admin.php'));
     }
 }
