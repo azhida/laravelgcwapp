@@ -85,7 +85,7 @@
                     echo '<td>' . $items->title . '</td>';
                     echo '<td>' . $items->url . '</td>';
                     echo '<td>' . $items->author . '</td>';
-                    echo '<td>' . $items->smallimg . '</td>';
+                    echo '<td><img src="' . $items->smallimg . '" alt="" style="width: 50px;height: 50px;"></td>';
                     echo '<td>' . $items->description . '</td>';
                     echo '<td>' . $items->add_time . '</td>';
                     echo '<td class="td-manage">';
@@ -98,29 +98,11 @@
                     echo '</td>';
                     echo '</tr>';
                 }
-
-
-
                 ?>
-                    {{--<tr>--}}
-                        {{--<td>--}}
-                            {{--<input type="checkbox" value="1" name="">--}}
-                        {{--</td>--}}
-
-                        {{--<td class="td-manage">--}}
-                            {{--<a title="编辑" href="javascript:;" onclick="question_edit('编辑','/admin/news/edit','4','','510')"--}}
-                            {{--class="ml-5" style="text-decoration:none">--}}
-                                {{--<i class="layui-icon">&#xe642;</i>--}}
-                            {{--</a>--}}
-                            {{--<a title="删除" href="javascript:;" onclick="question_del(this,'1')" --}}
-                            {{--style="text-decoration:none">--}}
-                                {{--<i class="layui-icon">&#xe640;</i>--}}
-                            {{--</a>--}}
-                        {{--</td>--}}
-                    {{--</tr>--}}
                 </tbody>
             </table>
-
+            <input id="last_page" type="hidden" value="{{$res->lastPage()}}">
+            <input id="curr_page" type="hidden" value="{{$res->currentPage()}}">
             <div id="page"></div>
         </div>
         <script src="/aiyou-admin/lib/layui/layui.js" charset="utf-8"></script>
@@ -128,48 +110,58 @@
         <script>
             layui.use(['laydate','element','laypage','layer'], function(){
                 $ = layui.jquery;//jquery
-              laydate = layui.laydate;//日期插件
-              lement = layui.element();//面包导航
-              laypage = layui.laypage;//分页
-              layer = layui.layer;//弹出层
+                laydate = layui.laydate;//日期插件
+                lement = layui.element();//面包导航
+                laypage = layui.laypage;//分页
+                layer = layui.layer;//弹出层
 
-              //以上模块根据需要引入
-              laypage({
-                cont: 'page'
-                ,pages: 100
-                ,first: 1
-                ,last: 100
-                ,prev: '<em><</em>'
-                ,next: '<em>></em>'
-              }); 
-              
-              var start = {
-                min: laydate.now()
-                ,max: '2099-06-16 23:59:59'
-                ,istoday: false
-                ,choose: function(datas){
-                  end.min = datas; //开始日选好后，重置结束日的最小日期
-                  end.start = datas //将结束日的初始值设定为开始日
+                laypage({
+                    cont: 'page', //容器。值支持id名、原生dom对象，jquery对象,
+                    curr: $('#curr_page').val() || 1,
+                    pages: $('#last_page').val(), //总页数
+                    skin: 'molv', //皮肤
+                    first: 1, //将首页显示为数字1,。若不显示，设置false即可
+                    last: $('#last_page').val(), //将尾页显示为总页数。若不显示，设置false即可
+                    prev: '<', //若不显示，设置false即可
+                    next: '>', //若不显示，设置false即可
+                });
+
+
+                //以上模块根据需要引入
+                var start = {
+                    min: laydate.now()
+                    ,max: '2099-06-16 23:59:59'
+                    ,istoday: false
+                    ,choose: function(datas){
+                        end.min = datas; //开始日选好后，重置结束日的最小日期
+                        end.start = datas //将结束日的初始值设定为开始日
+                    }
+                };
+
+                var end = {
+                    min: laydate.now()
+                    ,max: '2099-06-16 23:59:59'
+                    ,istoday: false
+                    ,choose: function(datas){
+                        start.max = datas; //结束日选好后，重置开始日的最大日期
+                    }
+                };
+
+                document.getElementById('LAY_demorange_s').onclick = function(){
+                    start.elem = this;
+                    laydate(start);
                 }
-              };
-              
-              var end = {
-                min: laydate.now()
-                ,max: '2099-06-16 23:59:59'
-                ,istoday: false
-                ,choose: function(datas){
-                  start.max = datas; //结束日选好后，重置开始日的最大日期
+                document.getElementById('LAY_demorange_e').onclick = function(){
+                    end.elem = this
+                    laydate(end);
                 }
-              };
-              
-              document.getElementById('LAY_demorange_s').onclick = function(){
-                start.elem = this;
-                laydate(start);
-              }
-              document.getElementById('LAY_demorange_e').onclick = function(){
-                end.elem = this
-                laydate(end);
-              }
+
+
+                $('#page').find('a').click(function () {
+                    var curr_page = $(this).text();
+                    window.location.href = '/admin/news/list?page=' + curr_page;
+                    return false;
+                });
             });
 
             //批量删除提交
@@ -180,16 +172,16 @@
                 });
              }
 
-             function question_show (argument) {
+            function question_show (argument) {
                 layer.msg('可以跳到前台具体问题页面',{icon:1,time:1000});
-             }
-             /*添加*/
+            }
+            /*添加*/
             function question_add(title,url,w,h){
                 x_admin_show(title,url,w,h);
             }
-            //编辑 
-           function question_edit (title,url,id,w,h) {
-                x_admin_show(title,url,w,h); 
+            //编辑
+            function question_edit (title,url,id,w,h) {
+                x_admin_show(title,url,w,h);
             }
 
             /*删除*/
@@ -200,15 +192,15 @@
                     layer.msg('已删除!',{icon:1,time:1000});
                 });
             }
-            </script>
-            <script>
-        var _hmt = _hmt || [];
-        (function() {
-          var hm = document.createElement("script");
-          hm.src = "https://hm.baidu.com/hm.js?b393d153aeb26b46e9431fabaf0f6190";
-          var s = document.getElementsByTagName("script")[0]; 
-          s.parentNode.insertBefore(hm, s);
-        })();
+        </script>
+        <script>
+            var _hmt = _hmt || [];
+            (function() {
+                var hm = document.createElement("script");
+                hm.src = "https://hm.baidu.com/hm.js?b393d153aeb26b46e9431fabaf0f6190";
+                var s = document.getElementsByTagName("script")[0];
+                s.parentNode.insertBefore(hm, s);
+            })();
         </script>
     </body>
 </html>

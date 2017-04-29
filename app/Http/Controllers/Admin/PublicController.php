@@ -12,6 +12,8 @@ use Gregwar\Captcha\CaptchaBuilder;
 
 class PublicController extends Controller
 {
+
+    // 生成并返回验证码
     public function code()
     {
         // 生成验证图片 文件名
@@ -25,6 +27,7 @@ class PublicController extends Controller
     }
 
 
+    // 后台管理 登录操作
     public function login(Request $request)
     {
     	if ($request->isMethod('get')) {
@@ -57,6 +60,18 @@ class PublicController extends Controller
             return back()->with('msg', '用户名或密码错误');
         }
     }
+
+    // 退出登录
+    public function logout()
+    {
+        // 清空 session 即可
+        session(['admin' => null]);
+        return redirect('admin/login');
+
+    }
+
+
+
 
 
 

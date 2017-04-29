@@ -28,7 +28,7 @@
                         <dl class="layui-nav-child"> <!-- 二级菜单 -->
                           <dd><a href="">个人信息</a></dd>
                           <dd><a href="">切换帐号</a></dd>
-                          <dd><a href="{{url('logout')}}">退出</a></dd>
+                          <dd><a href="{{url('/admin/logout')}}">退出</a></dd>
                         </dl>
                       </li>
                       <!-- <li class="layui-nav-item">

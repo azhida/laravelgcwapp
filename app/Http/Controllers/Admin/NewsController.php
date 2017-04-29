@@ -6,8 +6,21 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use DB;
 
+use Illuminate\Support\Facades\Response;
+
 class NewsController extends Controller
 {
+
+    // 定义 API 接口
+    public function api()
+    {
+        // 获取数据表中的数据
+        $orm = new \App\Http\Models\News();
+        $data = $orm->orderBy('id', 'asc')->get();
+        // 以 json格式 返回数据
+        return Response::json($data);
+
+    }
     //
     /**
      * 问题列表
@@ -15,7 +28,8 @@ class NewsController extends Controller
      */
     public function newsList()
     {
-        $res = DB::table('news')->get();
+        $res = DB::table('news')->orderBy('id', 'asc')->paginate(2);
+//        dd($res);
         return view('news.newsList')->with('res', $res);
     }
 
@@ -65,6 +79,13 @@ class NewsController extends Controller
             $msg = '文件上传成功';
             // 获取文件扩展名
             $entension = $request->file('news_img') -> getClientOriginalExtension();
+            // 定义允许上传的文件格式
+            $allow_extensions = ['jpg', 'png', 'gif'];
+            // 判断上传的文件是否合法（不为空，说明已上传，才校验，为空说明没上传，不需要校验）
+            if (!empty($entension) && !in_array($entension, $allow_extensions)) {
+                // 上传的文件后缀不在这三个中
+                return back()->with('msg', '上传格式错误');
+            }
 
             // 设置文件保存路径
             $file_path ='/upload/news_img/' . date('Y-m-d', time()) . '/';
