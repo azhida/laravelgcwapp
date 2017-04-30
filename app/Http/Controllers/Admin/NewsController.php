@@ -12,11 +12,14 @@ class NewsController extends Controller
 {
 
     // 定义 API 接口
-    public function api()
+    public function api(Request $request)
     {
+        // 配合 APP端的下拉刷新功能
+        $skip = $request->get('skip');
+        $limit = $request->get('limit');
         // 获取数据表中的数据
         $orm = new \App\Http\Models\News();
-        $data = $orm->orderBy('id', 'asc')->get();
+        $data = $orm->orderBy('id', 'asc')->skip($skip)->take($limit)->get();
         // 以 json格式 返回数据
         return Response::json($data);
 
