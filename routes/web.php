@@ -35,8 +35,9 @@ Route::group(['middleware' => ['admin.login'], 'prefix' => 'admin', 'namespace' 
     // 动态管理
     Route::get('/news/list', 'NewsController@newsList');
     Route::get('/news/add', 'NewsController@newsAdd');
-    Route::get('/news/del', 'NewsController@newsDel');
+    Route::post('/news/del/{id}', 'NewsController@newsDel');
     Route::get('/news/edit/{id}', 'NewsController@newsEdit');
+    Route::post('/news/edit/{id}', 'NewsController@newsSave');
     // 提交添加的信息
     Route::post('/news/store', 'NewsController@newsStore');
     // 上传文件

@@ -38,14 +38,44 @@ class NewsController extends Controller
         return view('news.newsAdd');
     }
 
-    public function newsDel()
+    public function newsDel(Request $request)
     {
-        return view('news.newsDel');
+        if ($request->id == '') {
+            return false;
+        }
+        DB::table('news')->where('id', $request->id)->delete();
+        return 'ok';
     }
 
-    public function newsEdit()
+    // 展示 编辑页面
+    public function newsEdit(Request $request)
     {
-        return view('news.newsEdit');
+        // 没有传递 id，直接返回 null
+        $id = $request->id;
+        if ($id == '') {
+            $res = '';
+            return view('news.newsEdit')->with('res', $res);
+        }
+
+        $res = DB::table('news')->where('id', $id)->first();
+        return view('news.newsEdit')->with('res', $res);
+    }
+
+    // 提交修改的信息
+    public function newsSave(Request $request)
+    {
+        //
+        $data = [
+            'id' => $request->id,
+            'title' => $request->title,
+            'url' => $request->url,
+            'author' => $request->author,
+            'smallimg' => $request->smallimg,
+            'description' => $request->description,
+            'add_time' => date('Y-m-d H:i:s', time()),
+        ];
+        $res = DB::table('news')->where('id', $request->id)->update($data);
+        return redirect('/admin/news/list');
     }
 
 
@@ -63,8 +93,8 @@ class NewsController extends Controller
             'add_time' => date('Y-m-d H:i:s', time()),
         ];
 
-        $id = DB::table('news')->insertGetId($input);
-        return back()->with('id', $id);
+        DB::table('news')->insertGetId($input);
+        return redirect('/admin/news/list');
     }
 
 

@@ -24,6 +24,7 @@
         </div>
         <div class="x-body">
             <form class="layui-form x-center" action="" style="width:800px">
+                <input id="token" type="hidden" name="_token" value="{{ csrf_token() }}">
                 <div class="layui-form-pane" style="margin-top: 15px;">
                   <div class="layui-form-item">
                     <label class="layui-form-label">日期范围</label>
@@ -42,7 +43,7 @@
                   </div>
                 </div> 
             </form>
-            <xblock><button class="layui-btn layui-btn-danger" onclick="delAll()"><i class="layui-icon">&#xe640;</i>批量删除</button><button class="layui-btn" onclick="question_add('添加问题','/admin/news/add','600','500')"><i class="layui-icon">&#xe608;</i>添加</button><span class="x-right" style="line-height:40px">共有数据：88 条</span></xblock>
+            <xblock><button class="layui-btn layui-btn-danger" onclick="delAll()"><i class="layui-icon">&#xe640;</i>批量删除</button><button class="layui-btn" onclick="question_add('添加问题','/admin/news/add','600','500')"><i class="layui-icon">&#xe608;</i>添加</button><span class="x-right" style="line-height:40px">共有数据：{{$res->total()}} 条</span></xblock>
             <table class="layui-table">
                 <thead>
                     <tr>
@@ -77,7 +78,6 @@
                 </thead>
                 <tbody>
                 <?php
-//                        dd($res);
                 foreach ($res as $items) {
                     echo '<tr>';
                     echo '<td><input type="checkbox" value="1" name=""></td>';
@@ -89,10 +89,10 @@
                     echo '<td>' . $items->description . '</td>';
                     echo '<td>' . $items->add_time . '</td>';
                     echo '<td class="td-manage">';
-                    echo '<a title="编辑" href="javascript:;" onclick="question_edit(\'编辑\',\'/admin/news/edit\',\'4\',\'\',\'510\')" class="ml-5" style="text-decoration:none">';
+                    echo "<a title='编辑' href='javascript:;' class='ml-5' style='text-decoration:none' onclick='question_edit(\"编辑\", \"/admin/news/edit/{$items->id}\", \"4\", \"\", \"510\")'>";
                     echo '<i class="layui-icon">&#xe642;</i>';
                     echo '</a>';
-                    echo '<a title="删除" href="javascript:;" onclick="question_del(this,\'1\')" style="text-decoration:none">';
+                    echo '<a title="删除" href="javascript:;" onclick="question_del(this,' . $items->id . ')" style="text-decoration:none">';
                     echo '<i class="layui-icon">&#xe640;</i>';
                     echo '</a>';
                     echo '</td>';
@@ -188,8 +188,21 @@
             function question_del(obj,id){
                 layer.confirm('确认要删除吗？',function(index){
                     //发异步删除数据
-                    $(obj).parents("tr").remove();
-                    layer.msg('已删除!',{icon:1,time:1000});
+                    $.ajax({
+                        type: 'post',
+                        url: '/admin/news/del/' + id,
+                        data: {_token: $('#token').val()},
+                        success: function (res) {
+                            if (res == 'ok') {
+                                // 删除成功
+                                $(obj).parents("tr").remove();
+                                layer.msg('已删除!',{icon:1,time:1000});
+                            } else {
+                                layer.msg('删除失败!',{icon:1,time:1000});
+                            }
+                        }
+                    })
+
                 });
             }
         </script>
