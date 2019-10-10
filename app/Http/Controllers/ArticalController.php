@@ -36,7 +36,7 @@ class ArticalController extends Controller
     public function add()
     {
     	$orm = new \App\Http\Models\Article();
-    	$orm->title = 'laravle 框架模型的应用';
+    	$orm->title = 'laravel 框架模型的应用';
 
     	$res = $orm->save();
     	dd($res);
@@ -66,7 +66,7 @@ class ArticalController extends Controller
     {
     	// $orm = new \App\Http\Models\Article();
     	$orm = Article::find(4);
-    	$orm->content = 'laravle 框架模型的应用';
+    	$orm->content = 'laravel 框架模型的应用';
     	$res = $orm->save();
     	dd($res);
 
